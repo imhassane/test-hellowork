@@ -30,6 +30,14 @@ const getDb = async () => {
                     CREATE INDEX IF NOT EXISTS idx_contract_type ON t_offers_off(contract_type);
                 `);
 
+                db.exec(`
+                    CREATE TABLE IF NOT EXISTS t_jobs_execution_history (
+                        id              INTEGER PRIMARY KEY AUTOINCREMENT,
+                        job_name        VARCHAR(100) NOT NULL,
+                        last_update     DATETIME NOT NULL
+                    );
+                `);
+
                 return db;
             })
             .catch((err) => {

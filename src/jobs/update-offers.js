@@ -8,6 +8,7 @@ const { RawOfferSchema } = require("../schemas/offer.schema");
     const logger = container.resolve("logger");
     const config = container.resolve("config");
     const cache = container.resolve("cache");
+    const db = container.resolve("db");
 
     logger.info("###### Starting updateOffers job ######");
 
@@ -43,7 +44,27 @@ const { RawOfferSchema } = require("../schemas/offer.schema");
             searchUrl.searchParams.append("commune", code);
         }
 
-        logger.info("Searching offers with URL: " + searchUrl.toString());
+        // TODO: Ajouter une date de début pour ne pas récupérer toutes les offres à chaque fois.
+        // TODO: idéalement, il faudrait appeler le repository pour séparer les responsabilités
+        const lastExecution = await db.then(db => db.get(
+            "SELECT MAX(last_update) as last_update FROM t_jobs_execution_history WHERE job_name = ? ORDER BY last_update DESC LIMIT 1",
+            ["update-offers"]
+        ));
+
+        logger.info("Last execution date for update-offers job:", lastExecution ? lastExecution["last_update"] : "never");
+
+        if (lastExecution && lastExecution["last_update"]) {
+            const maxDate = new Date();
+            const lastDate = new Date(lastExecution["last_update"]);
+
+            const [formattedMinDate, formattedMaxDate] = [lastDate, maxDate].map(date => {
+                // Sans millisecondes
+                return date.toISOString().replace(/\.\d{3}Z$/, "Z");
+            });
+
+            searchUrl.searchParams.append("minCreationDate", formattedMinDate);
+            searchUrl.searchParams.append("maxCreationDate", formattedMaxDate);
+        }
 
         response = await fetch(
             searchUrl,
@@ -59,6 +80,11 @@ const { RawOfferSchema } = require("../schemas/offer.schema");
         if (!response.ok) {
             const data = await response.json();
             throw new Error(`An error occured when fetching the jobs: ${data.message}`);
+        }
+
+        if (response.status === 204) {
+            logger.info("No new offers since the last execution.");
+            return;
         }
 
         const offersData = await response.json();

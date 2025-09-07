@@ -32,7 +32,7 @@ class OfferRepository {
                 await stmt.run([
                     offer.id,
                     offer.lieuTravail?.codePostal,
-                    offer.lieuTravail?.libelle?.toUpper(),
+                    offer.lieuTravail?.libelle?.toUpperCase(),
                     offer.intitule,
                     offer.description,
                     new Date(offer.dateCreation).toISOString(),
@@ -40,6 +40,11 @@ class OfferRepository {
                     offer.entreprise.nom
                 ]);
             }
+
+            await db.run(
+                "INSERT INTO t_jobs_execution_history (job_name, last_update) VALUES (?, ?)",
+                ["update-offers", new Date().toISOString()]
+            );
 
             await db.exec("COMMIT");
 
