@@ -7,6 +7,7 @@ const { RawOfferSchema } = require("../schemas/offer.schema");
 
     const logger = container.resolve("logger");
     const config = container.resolve("config");
+    const cache = container.resolve("cache");
 
     logger.info("###### Starting updateOffers job ######");
 
@@ -82,6 +83,8 @@ const { RawOfferSchema } = require("../schemas/offer.schema");
         }
 
         if (validatedOffers.length) {
+            // TODO: Mettre la clé dans une constante
+            cache.del("all_offers");
             await offerService.importOffers(validatedOffers);
         }
 

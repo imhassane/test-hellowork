@@ -1,3 +1,5 @@
+const { useCache } = require("../config/cache");
+
 class OfferController {
     constructor(offerService, logger) {
         this.offerService = offerService;
@@ -8,7 +10,18 @@ class OfferController {
         try {
             const limit = req.query.limit ? parseInt(req.query.limit) : 50;
             const city = req.query.city || null;
-            const offers = await this.offerService.getAllOffers(limit, city);
+            let offers;
+
+            if (limit == 50 && city === null) {
+                // TODO: Mettre la clé dans une constante
+                offers = await useCache(
+                    'all_offers',
+                    async () => await this.offerService.getAllOffers(limit, city)
+                );
+            }
+            else {
+                offers = await this.offerService.getAllOffers(limit, city);
+            }
 
             res.json(offers);
         } catch (error) {
