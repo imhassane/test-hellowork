@@ -51,8 +51,6 @@ const { RawOfferSchema } = require("../schemas/offer.schema");
             ["update-offers"]
         ));
 
-        logger.info("Last execution date for update-offers job:", lastExecution ? lastExecution["last_update"] : "never");
-
         if (lastExecution && lastExecution["last_update"]) {
             const maxDate = new Date();
             const lastDate = new Date(lastExecution["last_update"]);
@@ -65,6 +63,9 @@ const { RawOfferSchema } = require("../schemas/offer.schema");
             searchUrl.searchParams.append("minCreationDate", formattedMinDate);
             searchUrl.searchParams.append("maxCreationDate", formattedMaxDate);
         }
+
+        // TODO: revoir comment paramétrer les messages sans passer par la concaténation
+        logger.info("Searching offers updated with URL: " + searchUrl.toString());
 
         response = await fetch(
             searchUrl,
