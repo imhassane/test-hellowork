@@ -1,16 +1,16 @@
-import { asClass, asFunction, asValue, createContainer } from "awilix";
+const { asClass, asFunction, asValue, createContainer } = require("awilix");
 
-import { getDb } from "../db/index.js";
-import logger from "../config/logger.js";
-import config from "../config/index.js";
-import OfferRepository from "../repositories/offer.repo.sqlite.js";
-import OfferService from "../services/offer.service.js";
+const { getDb } = require("../db/index.js");
+const logger = require("../config/logger.js");
+const config = require("../config/index.js");
+const OfferRepository = require("../repositories/offer.repo.sqlite.js");
+const OfferService = require("../services/offer.service.js");
 
-export const buildContainer = () => {
+const buildContainer = () => {
     const container = createContainer({ injectionMode: "CLASSIC" });
 
     container.register({
-        config: config(config),
+        config: asValue(config),
         logger: asValue(logger),
         db: asFunction(getDb).singleton(),
 
@@ -23,3 +23,5 @@ export const buildContainer = () => {
 
     return container;
 };
+
+module.exports = { buildContainer };

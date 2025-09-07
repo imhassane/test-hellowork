@@ -1,4 +1,4 @@
-export default class OfferService {
+class OfferService {
     constructor(offerRepository, logger) {
         this.offerRepository = offerRepository;
         this.logger = logger;
@@ -7,13 +7,12 @@ export default class OfferService {
     /**
      * Inserts multiple offers into the database.
      * @param {Array<RawOfferSchema>} offers - List of offers fetched from API to insert in DB
-     * @return OfferSchema[] - List of offers inserted in DB
+     * @return void
      */
     async importOffers(offers) {
         this.logger.info(`Importing ${offers.length} offers...`);
-        const createdOffers = await this.offerRepository.bulkCreate(offers);
-        this.logger.info(`Imported ${createdOffers.length} offers.`);
-        return createdOffers;
+        await this.offerRepository.bulkCreate(offers);
+        this.logger.info(`Importing offers done.`);
     }
 
     /**
@@ -34,3 +33,5 @@ export default class OfferService {
         return this.offerRepository.findByCode(code);
     }
 }
+
+module.exports = OfferService;

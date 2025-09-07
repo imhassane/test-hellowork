@@ -1,6 +1,6 @@
-import { z } from "zod";
+const { z } = require("zod");
 
-export const OfferSchema = z.object({
+const OfferSchema = z.object({
     code: z.string().min(1, "Le code est requis."),
     title: z.string().min(1, "Le titre est requis."),
     description: z.string().min(1, "La description est requise."),
@@ -15,18 +15,22 @@ export const OfferSchema = z.object({
     }),
 });
 
-export const RawOfferSchema = z.object({
+const RawOfferSchema = z.object({
     id: z.string().min(1, "ID is required"),
     intitule: z.string().min(1, "Le titre est requis."),
     description: z.string().min(1, "La description est requise."),
-    dateCreation: z.date("La date de création est requise."),
-    typeContrat: z.enum(["CDI", "CDD"]),
+    dateCreation: z.string("La date de création est requise."),
+    typeContrat: z.enum(["CDI", "CDD", "MIS", "SAI"]),
     entreprise: z.object({
         nom: z.string().min(1, "Le nom de l'entreprise est requis."),
     }),
     lieuTravail: z.object({
-        codePostal: z.number().int("Le code postal doit être un entier."),
+        codePostal: z.string("Le code postal est requis."),
         libelle: z.string().min(1, "Le nom de la ville est requis."),
     }),
-});
+}).loose();
 
+module.exports = {
+    OfferSchema,
+    RawOfferSchema
+};

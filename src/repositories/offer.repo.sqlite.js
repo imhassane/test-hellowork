@@ -1,4 +1,4 @@
-export default class OfferRepository {
+class OfferRepository {
     constructor(db, logger) {
         this.db = db;
         this.logger = logger;
@@ -12,9 +12,8 @@ export default class OfferRepository {
         const db = await this.db;
 
         await db.exec("BEGIN TRANSACTION");
-    
-        try {
-            const stmt = await db.prepare(`
+
+        const stmt = await db.prepare(`
                 INSERT OR IGNORE INTO t_offers_off (
                     code,
                     city_code,
@@ -27,7 +26,8 @@ export default class OfferRepository {
                 )
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             `);
-
+    
+        try {
             for (const offer of offers) {
                 await stmt.run([
                     offer.id,
@@ -35,7 +35,7 @@ export default class OfferRepository {
                     offer.lieuTravail?.libelle,
                     offer.intitule,
                     offer.description,
-                    offer.dateCreation.toISOString(),
+                    new Date(offer.dateCreation).toISOString(),
                     offer.typeContrat,
                     offer.entreprise.nom
                 ]);
@@ -124,3 +124,5 @@ export default class OfferRepository {
     }
 
 }
+
+module.exports = OfferRepository;

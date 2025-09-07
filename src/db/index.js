@@ -1,10 +1,11 @@
-import { open } from "sqlite";
-import config from "../config";
-import logger from "../config/logger";
+const { open } = require("sqlite");
+const sqlite3 = require("sqlite3");
+const config = require("../config");
+const logger = require("../config/logger");
 
 let dbPromise;
 
-export const getDb = async () => {
+const getDb = async () => {
     if (!dbPromise) {
         dbPromise = open({ filename: config.DB_NAME, driver: sqlite3.Database })
             .then((db) => {
@@ -13,20 +14,20 @@ export const getDb = async () => {
                 // Initialisation des tables (on passerait pas des migratiions idéalement)
                 db.exec(`
                     CREATE TABLE IF NOT EXISTS t_offers_off (
-                        id              NUMBER PRIMARY KEY AUTOINCREMENT,
+                        id              INTEGER PRIMARY KEY AUTOINCREMENT,
                         code            VARCHAR(10) NOT NULL UNIQUE,
-                        city_code       NUMBER NOT NULL,
+                        city_code       INTEGER NOT NULL,
                         city_name       VARCHAR(100) NOT NULL,
                         title           VARCHAR(255) NOT NULL,
                         description     TEXT NOT NULL,
                         created_at      DATETIME NOT NULL,
                         contract_type   VARCHAR(10) NOT NULL,
-                        company_name    VARCHAR(50) NOT NULL,
-
-                        INDEX idx_city_code (city_code),
-                        INDEX idx_city_name (city_name),
-                        INDEX idx_contract_type (contract_type)
+                        company_name    VARCHAR(50) NOT NULL
                     );
+
+                    CREATE INDEX IF NOT EXISTS idx_city_code ON t_offers_off(city_code);
+                    CREATE INDEX IF NOT EXISTS idx_city_name ON t_offers_off(city_name);
+                    CREATE INDEX IF NOT EXISTS idx_contract_type ON t_offers_off(contract_type);
                 `);
 
                 return db;
@@ -38,3 +39,5 @@ export const getDb = async () => {
     }
     return dbPromise;
 }
+
+module.exports = { getDb };

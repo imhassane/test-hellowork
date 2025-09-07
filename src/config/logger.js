@@ -6,6 +6,7 @@ const logger = winston.createLogger({
     transports: [
         new winston.transports.File({ filename: "info.log", level: "info" }),
         new winston.transports.File({ filename: "error.log", level: "error" }),
+        new winston.transports.File({ filename: "debug.log", level: "debug" }),
     ],
 });
 
@@ -17,4 +18,4 @@ if (process.env.NODE_ENV !== "production") {
     );
 }
 
-export default logger;
+module.exports = logger;
