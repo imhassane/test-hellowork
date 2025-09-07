@@ -9,6 +9,10 @@ export const OfferSchema = z.object({
     company: z.object({
         name: z.string().min(1, "Le nom de l'entreprise est requis."),
     }),
+    city: z.object({
+        code: z.number().int("Le code de la ville doit être un entier."),
+        name: z.string().min(1, "Le nom de la ville est requis."),
+    }),
 });
 
 export const RawOfferSchema = z.object({
@@ -19,6 +23,10 @@ export const RawOfferSchema = z.object({
     typeContrat: z.enum(["CDI", "CDD"]),
     entreprise: z.object({
         nom: z.string().min(1, "Le nom de l'entreprise est requis."),
+    }),
+    lieuTravail: z.object({
+        codePostal: z.number().int("Le code postal doit être un entier."),
+        libelle: z.string().min(1, "Le nom de la ville est requis."),
     }),
 });
 
