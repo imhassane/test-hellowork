@@ -5,6 +5,7 @@ const logger = require("../config/logger.js");
 const config = require("../config/index.js");
 const OfferRepository = require("../repositories/offer.repo.sqlite.js");
 const OfferService = require("../services/offer.service.js");
+const OfferController = require("../controllers/offer.controller.js");
 
 const buildContainer = () => {
     const container = createContainer({ injectionMode: "CLASSIC" });
@@ -18,7 +19,10 @@ const buildContainer = () => {
         offerRepository: asClass(OfferRepository).singleton(),
 
         // Services
-        offerService: asClass(OfferService).scoped()
+        offerService: asClass(OfferService).scoped(),
+
+        // Controllers
+        offerController: asClass(OfferController).scoped()
     });
 
     return container;
