@@ -7,7 +7,8 @@ class OfferController {
     async list(req, res, next) {
         try {
             const limit = req.query.limit ? parseInt(req.query.limit) : 50;
-            const offers = await this.offerService.getAllOffers(limit);
+            const city = req.query.city || null;
+            const offers = await this.offerService.getAllOffers(limit, city);
 
             res.json(offers);
         } catch (error) {

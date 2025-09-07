@@ -18,10 +18,11 @@ class OfferService {
     /**
      * Gets all offers from db with a limit
      * @param {number} limit - Maximum number of offers to return
+     * @param {string} city - City name to filter offers (optional)
      * @returns OfferSchema[] - List of offers
      */
-    async getAllOffers(limit) {
-        return this.offerRepository.findAll(limit);
+    async getAllOffers(limit, city) {
+        return this.offerRepository.findAll(limit, city);
     }
 
     /**

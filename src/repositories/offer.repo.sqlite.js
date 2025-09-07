@@ -32,7 +32,7 @@ class OfferRepository {
                 await stmt.run([
                     offer.id,
                     offer.lieuTravail?.codePostal,
-                    offer.lieuTravail?.libelle,
+                    offer.lieuTravail?.libelle?.toUpper(),
                     offer.intitule,
                     offer.description,
                     new Date(offer.dateCreation).toISOString(),
@@ -76,7 +76,7 @@ class OfferRepository {
      * @param {number} limit - Maximum number of offers to return
      * @returns OfferSchema[]
      */
-    async findAll(limit = 50) {
+    async findAll(limit = 50, city = null) {
         const db = await this.db;
 
         const rows = await db.all(
@@ -90,9 +90,10 @@ class OfferRepository {
                 city_code,
                 city_name
              FROM t_offers_off
+             WHERE (? IS NULL OR city_name LIKE ?)
              ORDER BY created_at DESC
              LIMIT ?`,
-            [limit]
+            [city, city ? `%${city}%` : null, limit]
         );
 
         return rows.map(this._mapDbToSchema) || [];
